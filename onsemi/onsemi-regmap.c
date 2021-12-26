@@ -180,3 +180,4 @@ EXPORT_SYMBOL_GPL(__devm_regmap_init_onsemi);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Enrico Scholz <enrico.scholz@sigma-chemnitz.de>");
+
