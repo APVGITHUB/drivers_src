@@ -116,7 +116,7 @@ int cma_free(void *mem)
 	v_addr = (unsigned)mem;
 
 	if( ioctl(cma_fd, CMA_GET_SIZE, &data) == -1){
-		__DEBUG("cma_free - ioctl command unsuccsessful - \"%s\"\n", strerror(errno));
+		__DEBUG("cma_free - ioctl command unsuccsessful - 0\n");
 		return -1;
 	}
 	/* data now contains size */
@@ -126,7 +126,7 @@ int cma_free(void *mem)
 
 	/* free cma entry */
 	if( ioctl(cma_fd, CMA_FREE, &v_addr) == -1){
-		__DEBUG("cma_free - ioctl command unsuccsessful - \"%s\"\n", strerror(errno));
+		__DEBUG("cma_free - ioctl command unsuccsessful - 1\n");
 		return -1;
 	}
 
@@ -143,7 +143,7 @@ unsigned cma_get_phy_addr(void *mem)
 
 	/* get physical address */
 	if( ioctl(cma_fd, CMA_GET_PHY_ADDR, &data) == -1){
-		__DEBUG("cma_get_phy_addr - ioctl command unsuccsessful - \"%s\"\n", strerror(errno));
+		__DEBUG("cma_free - ioctl command unsuccsessful\n");
 		return 0;
 	}
 	/* data now contains physical address */
@@ -156,7 +156,7 @@ void *cma_alloc(size_t size, unsigned ioctl_cmd)
 {
 	unsigned data;
 	void 	*mem;
-	__DEBUG("Allocating 0x%x bytes of contigous memory\n", size);
+	__DEBUG("Allocating 0x%x bytes of uncached contigous memory\n", size);
 
 	/* Page align size */
 	size = ROUND_UP(size, getpagesize());
@@ -164,7 +164,7 @@ void *cma_alloc(size_t size, unsigned ioctl_cmd)
 	/* ioctl cmd to allocate contigous memory */
 	data = (unsigned)size;
 	if( ioctl(cma_fd, ioctl_cmd, &data) == -1){
-		__DEBUG("cma_alloc - ioctl command unsuccsessful - \"%s\"\n", strerror(errno));
+		__DEBUG("cma_alloc - ioctl command unsuccsessful\n");
 		return NULL;
 	}
 
@@ -174,7 +174,7 @@ void *cma_alloc(size_t size, unsigned ioctl_cmd)
 	/* mmap memory */
 	mem = mmap(NULL, size, PROT_WRITE | PROT_READ, MAP_SHARED, cma_fd, data);
 	if(mem == MAP_FAILED){
-		__DEBUG("cma_alloc - mmap unsuccsessful - \"%s\"\n", strerror(errno));
+		__DEBUG("cma_alloc - mmap unsuccsessful\n");
 		return NULL;
 	}
 

@@ -146,7 +146,7 @@ struct cma_entry *cma_entry_get_by_phy_addr(unsigned long phy_addr)
 
 	/* search for physical address */
 	while(walk != NULL){
-		if(walk->phy_addr == phy_addr)
+		if( (walk->pid == current->pid) && (walk->phy_addr == phy_addr))
 			goto leave;
 
 		walk = walk->next;
@@ -169,7 +169,7 @@ struct cma_entry *cma_entry_get_by_v_usr_addr(unsigned v_usr_addr)
 
 	/* search for user virtual address */
 	while(walk != NULL){
-		if(walk->v_usr_addr == v_usr_addr)
+		if( (walk->pid == current->pid) && (walk->v_usr_addr == v_usr_addr))
 			goto leave;
 
 		walk = walk->next;
@@ -273,7 +273,6 @@ static int cma_mmap(struct file *filp, struct vm_area_struct *vma)
 	/* check if mmap is alligned with according entry */
 	err = check_entry_accordance(entry, vma);
 	if(err) return err;
-    __DEBUG("cma_mmap - 1\n");
 
 	/* set user address for later reference (used when freeing the memory ) */
 	entry->v_usr_addr = vma->vm_start;
@@ -287,12 +286,10 @@ static int cma_mmap(struct file *filp, struct vm_area_struct *vma)
 		up_write(&current->mm->mmap_sem);
 	    return -EAGAIN;
 	}
-    __DEBUG("cma_mmap - 2\n");
 
 	/* save mmap ops and set entry mapped flag */
 	vma->vm_ops = &cma_ops;
 	entry->flags = (entry->flags & (~CMA_ENTRY_MAPPED)) | CMA_ENTRY_MAPPED;
-    __DEBUG("cma_mmap - 3\n");
 
 	return 0;
 }
@@ -435,10 +432,8 @@ static long cma_ioctl_get_phy_addr(struct file *filp, unsigned int cmd, unsigned
 
 	/* get entry */
 	entry = cma_ioctl_get_entry_from_v_usr_addr(cmd, arg);
-	if(entry == NULL){
-        __DEBUG("cma entry has not been found\n");
+	if(entry == NULL)
 		return -EFAULT;
-    }
 
 	/* put physical address into user space */
 	__put_user(entry->phy_addr, (typeof(&entry->phy_addr))arg);
