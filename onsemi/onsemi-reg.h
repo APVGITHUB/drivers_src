@@ -32,3 +32,4 @@
 
 
 #endif	/* H_LINUX_MEDIA_I2C_ONSEMI_REG_H */
+
