@@ -16,6 +16,12 @@
 #include <media/v4l2-device.h>
 #include <media/v4l2-ctrls.h>
 
+#include <media/v4l2-fwnode.h>
+#include <media/v4l2-mediabus.h>
+#include <media/v4l2-async.h>
+#include <media/v4l2-event.h>
+#include <media/v4l2-subdev.h>
+
 #define ONSEMI_NO_SLEW_RATE	(~0u)
 
 enum {
@@ -392,7 +398,7 @@ onsemi_has_mipi(struct onsemi_core const *onsemi)
 
 	for (i = 0; i < ARRAY_SIZE(onsemi->bus_info); ++i) {
 		if (onsemi->bus_info[i].is_used &&
-		    onsemi->bus_info[i].bus_type == V4L2_MBUS_CSI2)
+		    onsemi->bus_info[i].bus_type == V4L2_MBUS_CSI2_DPHY)
 			return true;
 	}
 
